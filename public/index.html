@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 센서 데이터 대시보드</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ESP32 센서 데이터 모니터링</h1>
+            <div class="status" id="connectionStatus">연결 중...</div>
+        </header>
+
+        <div class="controls">
+            <button id="clearData">데이터 초기화</button>
+            <select id="dateSelector">
+                <option value="">날짜 선택</option>
+            </select>
+            <button id="downloadCombinedCsv">통합 CSV 다운로드</button>
+            <button id="downloadCurrentCsv">전류 CSV 다운로드</button>
+            <button id="downloadTempCsv">온도 CSV 다운로드</button>
+        </div>
+
+        <!-- Device 온도/습도 박스 -->
+        <div class="device-env-box">
+            <h2>Device 환경 센서</h2>
+            <div class="device-info">
+                <span>MAC 주소: <span id="device-env-device">--</span></span>
+            </div>
+            <div class="sensor-cards">
+                <div class="sensor-card">
+                    <h3>Device 온도</h3>
+                    <div class="value-container">
+                        <span class="current-value" id="temp-devTemp">--</span>
+                        <span class="unit">°C</span>
+                    </div>
+                </div>
+                <div class="sensor-card">
+                    <h3>Device 습도</h3>
+                    <div class="value-container">
+                        <span class="current-value" id="temp-devHumi">--</span>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="device-charts">
+                <div class="chart-container">
+                    <h4>Device 온도</h4>
+                    <canvas id="deviceTempChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Device 습도</h4>
+                    <canvas id="deviceHumiChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 센서별 차트 그리드 (3행 2열) -->
+        <div class="charts-grid">
+            <!-- 센서 1 행 -->
+            <div class="chart-row">
+                <div class="chart-item">
+                    <h3>센서 1 온도</h3>
+                    <div class="sensor-values">
+                        <span>온도: <span id="temp-sensor1">--</span>°C</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sensor1TempChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <h3>센서 1 전류</h3>
+                    <div class="sensor-values">
+                        <span>전류: <span id="current-sensor1">--</span>A</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sensor1CurrentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- 센서 2 행 -->
+            <div class="chart-row">
+                <div class="chart-item">
+                    <h3>센서 2 온도</h3>
+                    <div class="sensor-values">
+                        <span>온도: <span id="temp-sensor2">--</span>°C</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sensor2TempChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <h3>센서 2 전류</h3>
+                    <div class="sensor-values">
+                        <span>전류: <span id="current-sensor2">--</span>A</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sensor2CurrentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- 센서 3 행 -->
+            <div class="chart-row">
+                <div class="chart-item">
+                    <h3>센서 3 온도</h3>
+                    <div class="sensor-values">
+                        <span>온도: <span id="temp-sensor3">--</span>°C</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sensor3TempChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <h3>센서 3 전류</h3>
+                    <div class="sensor-values">
+                        <span>전류: <span id="current-sensor3">--</span>A</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sensor3CurrentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- MAC 주소 정보 -->
+            <div class="mac-info-row">
+                <div class="chart-item">
+                    <h3>MAC 주소 정보</h3>
+                    <div class="device-info-box">
+                        <p>전류 센서 (ESP32 #1): <span id="current-device">--</span></p>
+                        <p>온도 센서 (ESP32 #2): <span id="temp-device">--</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-table-container">
+            <h2>최근 데이터</h2>
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>시간</th>
+                        <th>타입</th>
+                        <th>MAC 주소</th>
+                        <th>센서1</th>
+                        <th>센서2</th>
+                        <th>센서3</th>
+                        <th>Device 온도</th>
+                        <th>Device 습도</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
