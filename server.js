@@ -199,7 +199,7 @@ app.post('/api/current-sensor', (req, res) => {
         
         const broadcastData = {
             type: sensorType,
-            timestamp: data.timestamp || new Date().toISOString(),
+            timestamp: data.timestamp || Date.now() * 1000, // 마이크로초 단위로 통일
             deviceId: macId,
             data: {
                 sensor1: data.sensor1,
@@ -235,7 +235,7 @@ app.post('/api/temperature-sensor', (req, res) => {
         
         const broadcastData = {
             type: sensorType,
-            timestamp: data.timestamp || new Date().toISOString(),
+            timestamp: data.timestamp || Date.now() * 1000, // 마이크로초 단위로 통일
             deviceId: macId,
             data: {
                 sensor1: data.sensor1,

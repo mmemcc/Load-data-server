@@ -241,7 +241,9 @@ function connectWebSocket() {
     status.textContent = '연결 중...';
     status.className = 'status connecting';
     
-    ws = new WebSocket('ws://localhost:8080');
+    // 현재 페이지의 호스트를 사용하여 WebSocket 연결
+    const wsUrl = `ws://${window.location.hostname}:8080`;
+    ws = new WebSocket(wsUrl);
     
     ws.onopen = function() {
         console.log('WebSocket 연결됨');
@@ -271,7 +273,8 @@ function connectWebSocket() {
 
 function handleSensorData(message) {
     const { type, timestamp, deviceId, data } = message;
-    const time = new Date(timestamp);
+    // ESP32에서 받은 timestamp는 마이크로초(μs) 단위이므로 밀리초(ms)로 변환
+    const time = new Date(timestamp / 1000);
     
     updateCurrentValues(type, data, deviceId);
     
@@ -345,7 +348,7 @@ function addDataToChart(chart, timeLabel, value) {
 
 function addToRecentData(type, timestamp, data, deviceId) {
     recentData.unshift({
-        timestamp: new Date(timestamp).toLocaleString('ko-KR'),
+        timestamp: new Date(timestamp / 1000).toLocaleString('ko-KR'),
         type: type === 'current' ? '전류' : '온도',
         macAddress: deviceId || 'N/A',
         sensor1: data.sensor1.toFixed(2),
